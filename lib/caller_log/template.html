@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset='utf-8'/>
+    <style>
+ul {
+    padding-left: 0;
+}
+
+li {
+  list-style: none;
+  margin-bottom: .8rem;
+}
+
+ul.threads li {
+    float: left;
+    margin-top: -.5rem;
+}
+
+ul.calls {
+    position: fixed;
+    margin-top: 2rem;
+    top: 1rem;
+    bottom: 0;
+    width: 18rem;
+    overflow: auto;
+}
+
+ul.stacks {
+    position: fixed;
+    left: 20rem;
+    top: 1rem;
+    bottom: 0;
+    margin-top: 2rem;
+    overflow: auto;
+    width: calc(100% - 20rem);
+}
+
+p {
+    margin:0 0 0 0;
+}
+
+span.time {
+    display: block;
+    font-size: smaller;
+}
+
+.stacks span.class_and_method {
+  color: gray;
+  margin-right: .5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+ul.stacks li {
+  display: none;
+}
+
+ul.stacks li.show {
+    display: block;
+}
+    </style>
+  </head>
+  <body>
+    <ul class='threads'>
+    </ul>
+    <ul class='calls'>
+    </ul>
+    <ul class='stacks'>
+    </ul>
+    <script>
+(function(){
+
+  function calls_in_thread(id){
+    return document.querySelectorAll('.thread-' + id);
+  }
+
+  function show_call(thread_id){
+    calls_in_thread(thread_id).forEach(function(call){
+      call.classList.remove('hidden');
+    });
+    return true;
+  }
+
+  function hide_call(thread_id){
+    calls_in_thread(thread_id).forEach(function(call){
+      call.classList.add('hidden');
+    });
+  }
+
+  function toggle_stack(call_li){
+    var curr_shown = document.querySelector('.show')
+    curr_shown && curr_shown.classList.remove('show');
+    document.querySelector('.' + call_li.id).classList.add('show');
+  }
+
+  var body = document.getElementsByTagName('body')[0];
+
+  body.addEventListener('click', function(e){
+    var target = e.target;
+    target.type == 'checkbox' && target.checked && show_call(target.value) || hide_call(target.value);
+    e.target.parentElement.classList.contains('call') && toggle_stack(e.target.parentElement);
+  }, false);
+
+})();
+    </script>
+  </body>
+</html>
