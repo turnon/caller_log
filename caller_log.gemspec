@@ -24,7 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
 
-  spec.add_dependency "dcr"
   spec.add_dependency "binding_of_callers"
   spec.add_dependency "nokogiri", "~> 1.7.1"
 end

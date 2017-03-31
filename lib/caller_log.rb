@@ -6,23 +6,46 @@ require 'dcr'
 module CallerLog
   class << self
 
-    def instance *args
+    def log *args
       raise ArgumentError,
         "wrong number of arguments (given #{args.count}, expected more than 1)" if args.count < 2
       log_file = args.pop
-      modules = Array args
+      objects = Array args
 
       log = Log.new log_file
 
-      modules.each do |mod|
-        mod.instance_methods(false).each do |method_id|
-          Dcr.instance mod, method_id do |method, *para, &blk|
-            record =  OpenStruct.new time: Time.now, module: mod, method_id: method_id, callers: binding.of_callers[2..-1]
+      objects.each do |obj|
+
+        callee = calling obj
+
+        obj.instance_methods(false).each do |method_id|
+          o_method = ref_old method_id
+          obj.send :alias_method, o_method, method_id
+          obj.send :define_method, method_id, &-> *para, &blk {
+            record =  OpenStruct.new time: Time.now, callee: "#{callee}##{method_id}", callers: binding.of_callers[1..-1]
             log.puts record
-            method.call *para, &blk
-          end
+            self.send o_method, *para, &blk
+          }
+        end if obj.is_a? Module
+
+        obj.methods(false).each do |method_id|
+          o_method = obj.method method_id
+          obj.singleton_class.send :define_method, method_id, &-> *para, &blk {
+            record =  OpenStruct.new time: Time.now, callee: "#{callee}.#{method_id}", callers: binding.of_callers[1..-1]
+            log.puts record
+            o_method.call *para, &blk
+          }
         end
+
       end
+    end
+
+    def calling obj
+      Module === obj ? "#{obj}" : "<#{obj.class}:#{obj.object_id}>"
+    end
+
+    def ref_old method_id
+      "#{method_id}_caller_log"
     end
   end
 

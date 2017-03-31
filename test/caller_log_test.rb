@@ -10,16 +10,20 @@ class CallerLogTest < Minitest::Test
     def run n
       run n - 1 unless n == 0
     end
+
+    def self.new_and_go n
+      k = K.new
+      k.run n
+      k.action n
+    end
   end
 
   def test_it_does_something_useful
-    CallerLog.instance K, '/tmp/caller_log_test.html'
-    k = K.new
-    ts = (1..4).map do |n|
+    CallerLog.log K, '/tmp/caller_log_test.html'
+    ts = (1..3).map do |n|
       Thread.new do
         n.times do
-          k.action n
-          k.run n
+          K.new_and_go n
         end
       end
     end

@@ -57,14 +57,16 @@ EOHTML
         time = record.time.strftime "%F %T"
         call = Nokogiri::HTML::DocumentFragment.parse <<-EOHTML
 <li id='call-#{record.object_id}' class='thread-#{Thread.current.object_id} call'>
-  <span class='time'>#{time}</span><span class='class_and_method'>#{record.module}##{record.method_id}</span>
+  <span class='time'>#{time}</span><span class='class_and_method'>#{record.callee}</span>
 </li>
 EOHTML
         base.at_css('.calls') << call
       end
 
       def new_stack_fragment record
-        callers = record.callers.map do |c|
+        callers = record.callers.reject do |c|
+          c.file =~ /caller_log\/lib\/caller_log\.rb/
+        end.map do |c|
           class_and_method = CGI::escapeHTML "#{c.klass}#{c.call_symbol}#{c.frame_env}"
           "<p><span class='class_and_method'>#{class_and_method}</span><span class='location'>#{c.file}:#{c.line}</span></p>"
         end.join
