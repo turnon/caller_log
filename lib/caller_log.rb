@@ -1,7 +1,6 @@
 require 'caller_log/version'
 require 'caller_log/log'
 require 'binding_of_callers'
-require 'dcr'
 
 module CallerLog
   class << self
