@@ -3,18 +3,27 @@
   <head>
     <meta charset='utf-8'/>
     <style>
+html,body {
+    margin: 0;
+    padding: 0;
+    background-color: #E91E63;
+}
 ul {
     padding-left: 0;
+    background-color: white;
+    margin-bottom: 0;
 }
 
 li {
   list-style: none;
   margin-bottom: .8rem;
+  padding-left: 1rem;
 }
 
 ul.threads li {
     float: left;
     margin-top: -.5rem;
+    color: white;
 }
 
 ul.calls {
@@ -23,17 +32,19 @@ ul.calls {
     top: 1rem;
     bottom: 0;
     width: 18rem;
+    padding: 1rem 0 1rem 0;
     overflow: auto;
 }
 
 ul.stacks {
     position: fixed;
-    left: 20rem;
+    left: 18rem;
     top: 1rem;
     bottom: 0;
     margin-top: 2rem;
+    padding: 1rem 0 1rem 0;
     overflow: auto;
-    width: calc(100% - 20rem);
+    width: calc(100% - 18rem);
 }
 
 p {
@@ -60,6 +71,10 @@ ul.stacks li {
 
 ul.stacks li.show {
     display: block;
+}
+
+.highlight {
+  color: #03A9F4;
 }
     </style>
   </head>
@@ -96,12 +111,19 @@ ul.stacks li.show {
     document.querySelector('.' + call_li.id).classList.add('show');
   }
 
+  function highlight(call_li){
+    var curr_highlight = document.querySelector('.highlight');
+    curr_highlight && curr_highlight.classList.remove('highlight');
+    call_li.classList.add('highlight');
+    return true;
+  }
+
   var body = document.getElementsByTagName('body')[0];
 
   body.addEventListener('click', function(e){
     var target = e.target;
     target.type == 'checkbox' && target.checked && show_call(target.value) || hide_call(target.value);
-    e.target.parentElement.classList.contains('call') && toggle_stack(e.target.parentElement);
+    e.target.parentElement.classList.contains('call') && highlight(e.target.parentElement) && toggle_stack(e.target.parentElement);
   }, false);
 
 })();
